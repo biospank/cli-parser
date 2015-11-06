@@ -1,5 +1,5 @@
 defmodule Issues.GithubIssues do
-  @user_agent [ { "User-agent", "Elixirdave@pragprog.com" } ]
+  @user_agent [ { "User-agent", "fabio.petrucci@gmail.com" } ]
 
   def fetch(user, project) do
     issue_url(user, project)
@@ -12,10 +12,14 @@ defmodule Issues.GithubIssues do
   end
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    { :ok, body }
+    { :ok, :jsx.decode(body) }
+  end
+
+  defp handle_response({:ok, %HTTPoison.Response{status_code: 404, body: body}}) do
+    { :ok, :jsx.decode(body) }
   end
 
   defp handle_response({:error, %HTTPoison.Response{ status_code: ___, body: body}}) do
-    { :error, body }
+    { :error, :jsx.decode(body) }
   end
 end
